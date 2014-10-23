@@ -311,7 +311,11 @@ module Net
             if prev_base[i].parent_of?(vb.oid) && vb.object_type != Constants::SNMP_ENDOFMIBVIEW
               # Still in subtree.  Store results and add next oid to list
               debug "adding #{vb.oid} to oidlist"
-              all_results[vb.oid.to_s] = vb.value
+              if block_given?
+                yield vb
+              else
+                all_results[vb.oid.to_s] = vb.value
+              end
               oidlist << vb.oid
             else
               # End of subtree.  Don't add to list or results
@@ -338,10 +342,9 @@ module Net
             end
           end
         end
-        if block_given?
-          yield all_results
+        unless block_given?
+          all_results
         end
-        all_results
       end
 
 
